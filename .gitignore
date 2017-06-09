@@ -1,0 +1,12 @@
+# Python #
+*.ini
+
+
+# Directory-based project format #
+.idea/
+./out/
+
+# File-based project format #
+*.mp4
+*.json
+*.avi

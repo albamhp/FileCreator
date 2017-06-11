@@ -1,5 +1,5 @@
 # Python #
-*.ini
+__pycache__
 
 
 # Directory-based project format #
@@ -10,3 +10,4 @@
 *.mp4
 *.json
 *.avi
+*.ini

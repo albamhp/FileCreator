@@ -1,28 +1,30 @@
 import serial
 import os
-from configure.Configure import port
-
+import serial.tools.list_ports
 
 # headers class
 class Headers:
-
     TIME_REQUEST = b'\1'
     TIME_HEADER = b'\2'
     TIME_SET = b'\3'
+    DATA = b'\4'
 
+
+def get_serial_port():
+    seri = "/dev/"+os.popen("dmesg | egrep ttyACM | cut -f3 -d: | tail -n1").read().strip()
+    return seri
 
 # set serial connection
-ser = serial.Serial(port, baudrate=9600, timeout=1)
+ser = serial.Serial(get_serial_port(), baudrate=9600, timeout=1)
 
 
 # time sync
 def time_sync():
     while True:
-        read = ser.read()
-        if read == Headers.TIME_REQUEST:
-            ser.write(Headers.TIME_HEADER)
-            os.system('date +%s > /dev/ttyACM0')
-            read = ser.read()
 
+        ser.write(Headers.TIME_HEADER)
+        os.system('date +%s > ' + get_serial_port())
+        read = ser.read()
+        #print(read)
         if read == Headers.TIME_SET:
             break

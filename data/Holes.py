@@ -5,5 +5,7 @@ from .Hole import Hole
 
 holes = []
 
-for x in range(rows*cols):
-    holes.append(Hole())
+def createHoles():
+    del holes[:]
+    for x in range(rows*cols):
+        holes.append(Hole())

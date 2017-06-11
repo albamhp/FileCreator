@@ -1,28 +1,41 @@
 from configure.Configure import raspberry
 from utils.DataUtils import *
-from utils.NetUtils import ser, time_sync
+from utils.NetUtils import *
 from utils.CameraUtils import *
 import threading
 import os
 import sys
 import time
+from data.Holes import createHoles
 
 # time sync
-time_sync()
 t = int(time.time())
+createHoles()
+
 
 if raspberry:
     from utils.RaspberrySetup import *
     rasp_setup()
     while GPIO.input(16):
-        t = int(time.time())
         t_stop = threading.Event()
-        camera_thread = threading.Thread(target=camera_record, arg  s=(t, t_stop))
+        camera_thread = threading.Thread(target=camera_record, args=(t, t_stop))
+        t = int(time.time())
         camera_thread.start()
+
+        start = 0
         while GPIO.input(16) and GPIO.input(18):
-            process_data(t)
+            header = ser.read()
+            if header == Headers.TIME_REQUEST:
+                time_sync()
+            elif header == Headers.DATA:
+                process_data(t)
+
+                #print (time.time()-start)
+                start = time.time()
+
         t_stop.set()
         json_write(get_serialized(t), t)
+        createHoles()
     GPIO.cleanup()
     ser.close()
     #  Shutdown

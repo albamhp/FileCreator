@@ -1,18 +1,32 @@
-from .NetUtils import ser
+from .NetUtils import ser, Headers
 from data.Holes import holes
 from data.HoleState import HoleState
 from data.serialize.SerializableHole import SerializableHole
 from data.serialize.Output import Output
 from configure.Configure import rows, cols
+
 import jsonpickle
+import time
 
 
 
 # read serial and process data
+
 def process_data(t):
-    data = ser.readline().decode()
-    if data != '':
-        holes[int(data[:2])].add_state(HoleState(int(data[2:-11]), int(data[-11:]) - int(t)))
+
+    tim = ser.readline().decode()
+    if tim != '':
+        actual_tim = int(tim) - t
+        data = ser.read(16)
+        state = 0
+        for y in range(int(rows * cols)):
+            if y % 4 == 0:
+                state = data[y>>2]
+            curr_state = int((state & 0b11000000) >> 6)
+            holes[y].add_state(curr_state, actual_tim*1000)
+            state <<= 2
+    time.sleep(0.5)
+    ser.flushInput()
 
 
 # serialize

@@ -7,7 +7,6 @@ cfgfile = open("configure/config.ini", 'w')
 # add the settings to the structure of the file, and lets write it out...
 Config.add_section('Section1')
 Config.set('Section1', 'raspberry', 'True')
-Config.set('Section1', 'port', '/dev/ttyACM1')
 
 Config.add_section('Section2')
 Config.set('Section2', 'rows', '8')
